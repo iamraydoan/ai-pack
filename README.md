@@ -112,7 +112,12 @@ def fibonacci(n):
     ...
 ```
 
-*Supports Python and all brace-delimited languages (JS, TS, Go, Rust, C++, Java, Swift, etc.)*
+*Supports Python, JavaScript, TypeScript, Go, Rust, Java, C#, C++, PHP, Lua, CSS, Swift, and Kotlin via codesigs and ast-grep.*
+
+> [!IMPORTANT]
+> **Skeleton Mode Dependencies**:
+> * **Python >= 3.9**: Required to run the `--skeleton` feature.
+> * **ast-grep**: For non-Python languages, the `ast-grep` command-line tool must be installed globally (e.g. via npm: `npm install -g @ast-grep/cli` or cargo: `cargo install ast-grep`).
 
 ---
 
