@@ -11,8 +11,10 @@ setup(
     install_requires=[
         "pyperclip>=1.8.2",
         "questionary>=1.10.0",
-        "codesigs>=0.0.1",
     ],
+    extras_require={
+        "skeleton": ["codesigs>=0.0.1"],
+    },
     entry_points={
         "console_scripts": [
             "ai-pack=ai_pack:main",

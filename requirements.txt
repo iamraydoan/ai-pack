@@ -1,3 +1,2 @@
 pyperclip>=1.8.2
 questionary>=1.10.0
-codesigs>=0.0.1
