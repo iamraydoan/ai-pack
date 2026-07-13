@@ -50,3 +50,14 @@ async def fetch_data(url):
 ) -> bool:
     ..."""
         self.assertEqual(SkeletonExtractor.extract_python_skeleton(code).strip(), expected.strip())
+
+    def test_single_line_and_comments(self):
+        code = """def simple_get(self): return self.x
+
+def comment_sig(a, b): # basic add
+    return a + b
+"""
+        expected = """def simple_get(self): return self.x
+def comment_sig(a, b): # basic add
+    ..."""
+        self.assertEqual(SkeletonExtractor.extract_python_skeleton(code).strip(), expected.strip())

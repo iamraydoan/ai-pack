@@ -119,3 +119,21 @@ impl Robot {
     private int calc(int a)  { /* ... */ }
 }"""
         self.assertEqual(SkeletonExtractor.extract_brace_skeleton(java_code).strip(), expected.strip())
+
+    def test_typescript_return_types(self):
+        ts_code = """class Manager {
+    async getItems(req: Request): Promise<Item[]> {
+        return this.client.get();
+    }
+    
+    add(a: number, b: number): number {
+        return a + b;
+    }
+}
+"""
+        expected = """class Manager {
+    async getItems(req: Request): Promise<Item[]>  { /* ... */ }
+    
+    add(a: number, b: number): number  { /* ... */ }
+}"""
+        self.assertEqual(SkeletonExtractor.extract_brace_skeleton(ts_code).strip(), expected.strip())

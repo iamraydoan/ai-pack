@@ -231,10 +231,16 @@ class SkeletonExtractor:
                 indent = len(line) - len(line.lstrip())
                 sig_lines = []
                 
-                # Consume multi-line signatures
+                # Consume multi-line signatures by tracking open parentheses/brackets
+                open_braces = 0
                 while i < n:
-                    sig_lines.append(lines[i])
-                    if lines[i].rstrip().endswith(":"):
+                    line_to_add = lines[i]
+                    sig_lines.append(line_to_add)
+                    open_braces += line_to_add.count('(') - line_to_add.count(')')
+                    open_braces += line_to_add.count('[') - line_to_add.count(']')
+                    open_braces += line_to_add.count('{') - line_to_add.count('}')
+                    
+                    if open_braces <= 0 and ":" in line_to_add:
                         break
                     i += 1
                     
@@ -360,15 +366,18 @@ class SkeletonExtractor:
                     is_func = True
                 elif any(x in prefix_str for x in ('fn ', 'func ')):
                     is_func = True
-                elif prefix_str.endswith(')'):
-                    words = [w for w in prefix_str.split() if w]
-                    clean_words = [w for w in words if w not in (
-                        'export', 'async', 'default', 'public', 'private', 'protected', 'static', 'readonly'
-                    )]
-                    if clean_words:
-                        first_word = clean_words[0].split('(')[0].strip()
-                        if first_word not in ('if', 'for', 'while', 'switch', 'catch'):
-                            is_func = True
+                elif '(' in prefix_str and ')' in prefix_str:
+                    first_paren = prefix_str.find('(')
+                    name_part = prefix_str[:first_paren].strip()
+                    words = name_part.split()
+                    if words:
+                        clean_words = [w for w in words if w not in (
+                            'export', 'async', 'default', 'public', 'private', 'protected', 'static', 'readonly'
+                        )]
+                        if clean_words:
+                            first_word = clean_words[0].strip()
+                            if first_word not in ('if', 'for', 'while', 'switch', 'catch'):
+                                is_func = True
                             
                 if is_func:
                     skip_until_brace_depth = brace_depth
