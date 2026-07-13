@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ai-pack-cli",
-    version="0.1.1",
+    version="0.1.2",
     py_modules=["ai_pack"],
     install_requires=[
         "pyperclip>=1.8.2",
