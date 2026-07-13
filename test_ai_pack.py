@@ -12,17 +12,27 @@ class TestBinaryDetection(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_text_file(self):
+    def test_text_file_is_not_binary(self):
         file_path = os.path.join(self.test_dir, "text.txt")
         with open(file_path, "w", encoding="utf-8") as f:
-            f.write("Hello, this is a plain text file.")
+            f.write("Hello, this is a plain text file with normal characters.")
         self.assertFalse(is_binary(file_path))
 
-    def test_binary_file(self):
+    def test_empty_file_is_not_binary(self):
+        file_path = os.path.join(self.test_dir, "empty.txt")
+        with open(file_path, "w") as f:
+            f.write("")
+        self.assertFalse(is_binary(file_path))
+
+    def test_binary_file_with_null_byte_is_binary(self):
         file_path = os.path.join(self.test_dir, "binary.bin")
         with open(file_path, "wb") as f:
-            f.write(b"Hello\x00world binary content")
+            f.write(b"PNG\x00\x00\x00\r\nIHDR")
         self.assertTrue(is_binary(file_path))
+
+    def test_missing_file_is_treated_as_binary(self):
+        # Non-existent files should return True (ignored) instead of crashing
+        self.assertTrue(is_binary(os.path.join(self.test_dir, "does_not_exist.bin")))
 
 
 class TestGitignoreMatcher(unittest.TestCase):
@@ -32,112 +42,205 @@ class TestGitignoreMatcher(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_default_ignores(self):
+    def test_standard_ignores(self):
+        matcher = GitignoreMatcher(self.test_dir)
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "node_modules", "lodash", "index.js")))
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "src", "__pycache__", "utils.cpython-38.pyc")))
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, ".git", "config")))
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "venv", "lib", "python3.8", "site-packages")))
+
+    def test_matching_wildcard_patterns(self):
+        with open(os.path.join(self.test_dir, ".gitignore"), "w") as f:
+            f.write("*.log\ntemp*\n")
+        matcher = GitignoreMatcher(self.test_dir)
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "error.log")))
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "sub", "output.log")))
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "temp_data.csv")))
+        self.assertFalse(matcher.is_ignored(os.path.join(self.test_dir, "item_temp.txt")))
+
+    def test_absolute_vs_relative_gitignore_paths(self):
+        with open(os.path.join(self.test_dir, ".gitignore"), "w") as f:
+            f.write("/root_only.txt\nsub/ignored.txt\n")
         matcher = GitignoreMatcher(self.test_dir)
         
-        # node_modules and pycache should be ignored by default
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "node_modules", "package.json")))
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "__pycache__", "main.pyc")))
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, ".venv", "bin", "python")))
+        # Starts with /: matches only at root
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "root_only.txt")))
+        self.assertFalse(matcher.is_ignored(os.path.join(self.test_dir, "nested", "root_only.txt")))
         
-        # Normal files should not be ignored
-        self.assertFalse(matcher.is_ignored(os.path.join(self.test_dir, "src", "main.py")))
+        # Relative path matches nested folder structure
+        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "sub", "ignored.txt")))
 
-    def test_custom_gitignore_rules(self):
-        # Create a mock .gitignore file
-        gitignore_content = """
-# Ignore all logs
-*.log
-# Ignore temp directory
-/temp/
-# Ignore secret files anywhere
-secrets.json
+
+class TestPythonSkeletonExtractor(unittest.TestCase):
+    def test_basic_functions_and_classes(self):
+        code = """class User:
+    def __init__(self, name):
+        self.name = name
+    def greet(self):
+        print("Hello " + self.name)
 """
-        with open(os.path.join(self.test_dir, ".gitignore"), "w", encoding="utf-8") as f:
-            f.write(gitignore_content)
-            
-        matcher = GitignoreMatcher(self.test_dir)
-        
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "app.log")))
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "logs", "error.log")))
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "temp", "anyfile.txt")))
-        self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "config", "secrets.json")))
-        
-        # Files not matching rules should not be ignored
-        self.assertFalse(matcher.is_ignored(os.path.join(self.test_dir, "src", "app.py")))
-        self.assertFalse(matcher.is_ignored(os.path.join(self.test_dir, "templates", "index.html")))
+        expected = """class User:
+    def __init__(self, name):
+        ...
+    def greet(self):
+        ..."""
+        self.assertEqual(SkeletonExtractor.extract_python_skeleton(code).strip(), expected.strip())
 
+    def test_decorators_and_async(self):
+        code = """@property
+@cache
+def value(self):
+    return self._val
 
-class TestSkeletonExtractor(unittest.TestCase):
-    def test_python_skeleton(self):
-        python_code = """import os
-
-@decorator
-class MyClass:
-    \"\"\"Docstring class.\"\"\"
-    
-    def __init__(self, val):
-        self.val = val
-        print(self.val)
-        
-    def get_val(self):
-        return self.val
-
-def top_level_func(a, b):
-    # comment inside
-    return a + b
+async def fetch_data(url):
+    res = await client.get(url)
+    return res.json()
 """
-        expected_skeleton = """import os
-
-@decorator
-class MyClass:
-    \"\"\"Docstring class.\"\"\"
-    
-    def __init__(self, val):
-        ...
-    def get_val(self):
-        ...
-def top_level_func(a, b):
+        expected = """@property
+@cache
+def value(self):
+    ...
+async def fetch_data(url):
     ..."""
-        skeleton = SkeletonExtractor.extract_python_skeleton(python_code)
-        self.assertEqual(skeleton.strip(), expected_skeleton.strip())
+        self.assertEqual(SkeletonExtractor.extract_python_skeleton(code).strip(), expected.strip())
 
-    def test_brace_skeleton(self):
-        js_code = """import { helper } from './utils';
+    def test_multiline_signatures(self):
+        code = """def complex_function(
+    a: int,
+    b: str,
+    c: float = 1.0
+) -> bool:
+    print(a, b, c)
+    return True
+"""
+        expected = """def complex_function(
+    a: int,
+    b: str,
+    c: float = 1.0
+) -> bool:
+    ..."""
+        self.assertEqual(SkeletonExtractor.extract_python_skeleton(code).strip(), expected.strip())
 
-const x = 10;
 
-export class Calculator {
-    constructor(val) {
-        this.val = val;
+class TestBraceSkeletonExtractor(unittest.TestCase):
+    def test_javascript_typescript(self):
+        js_code = """import { component } from 'framework';
+const PORT = 8080;
+
+export default class Widget extends Base {
+    constructor(config) {
+        super(config);
+        this.init();
     }
-    
-    add(a, b) {
-        if (a > 0) {
-            return a + b;
-        }
-        return b;
+
+    render() {
+        return `<div>${this.config.title}</div>`;
     }
 }
 
-function compute(data) {
-    return data.map(x => x * 2);
+const add = (a, b) => {
+    return a + b;
+};
+"""
+        expected = """import { component } from 'framework';
+const PORT = 8080;
+
+export default class Widget extends Base {
+    constructor(config)  { /* ... */ }
+
+    render()  { /* ... */ }
+}
+
+const add = (a, b) =>  { /* ... */ };"""
+        self.assertEqual(SkeletonExtractor.extract_brace_skeleton(js_code).strip(), expected.strip())
+
+    def test_js_template_literals_with_braces(self):
+        # Make sure that `${val}` inside template strings does not break brace matching
+        js_code = """const render = (name) => {
+    return `Hello, ${name}! Your age is ${getAge({birth: 1990})}.`;
+};
+"""
+        expected = """const render = (name) =>  { /* ... */ };"""
+        self.assertEqual(SkeletonExtractor.extract_brace_skeleton(js_code).strip(), expected.strip())
+
+    def test_golang_parser(self):
+        go_code = """package main
+import "fmt"
+
+type Server struct {
+    Port int
+}
+
+func NewServer(port int) *Server {
+    return &Server{Port: port}
+}
+
+func (s *Server) Start() error {
+    fmt.Println("Starting...")
+    return nil
 }
 """
-        expected_skeleton = """import { helper } from './utils';
+        expected = """package main
+import "fmt"
 
-const x = 10;
-
-export class Calculator {
-    constructor(val)  { /* ... */ }
-    
-    add(a, b)  { /* ... */ }
+type Server struct {
+    Port int
 }
 
-function compute(data)  { /* ... */ }"""
-        
-        skeleton = SkeletonExtractor.extract_brace_skeleton(js_code)
-        self.assertEqual(skeleton.strip(), expected_skeleton.strip())
+func NewServer(port int) *Server  { /* ... */ }
+
+func (s *Server) Start() error  { /* ... */ }"""
+        self.assertEqual(SkeletonExtractor.extract_brace_skeleton(go_code).strip(), expected.strip())
+
+    def test_rust_parser(self):
+        rust_code = """use std::io;
+
+pub struct Robot {
+    name: String,
+}
+
+impl Robot {
+    pub fn new(name: &str) -> Self {
+        Robot {
+            name: name.to_string(),
+        }
+    }
+
+    fn speak(&self) {
+        println!("Hello, my name is {}", self.name);
+    }
+}
+"""
+        expected = """use std::io;
+
+pub struct Robot {
+    name: String,
+}
+
+impl Robot {
+    pub fn new(name: &str) -> Self  { /* ... */ }
+
+    fn speak(&self)  { /* ... */ }
+}"""
+        self.assertEqual(SkeletonExtractor.extract_brace_skeleton(rust_code).strip(), expected.strip())
+
+    def test_cpp_java_parser(self):
+        java_code = """public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+    
+    private int calc(int a) {
+        return a * 2;
+    }
+}
+"""
+        expected = """public class App {
+    public static void main(String[] args)  { /* ... */ }
+    
+    private int calc(int a)  { /* ... */ }
+}"""
+        self.assertEqual(SkeletonExtractor.extract_brace_skeleton(java_code).strip(), expected.strip())
 
 
 if __name__ == "__main__":
