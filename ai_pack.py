@@ -208,6 +208,20 @@ class SkeletonExtractor:
         return content
 
 
+def copy_via_osc52(payload: str) -> bool:
+    """Attempts to copy text to the client system clipboard using OSC 52 escape sequence."""
+    try:
+        import base64
+        # Base64 encode the payload
+        b64_data = base64.b64encode(payload.encode("utf-8")).decode("ascii")
+        # Write to stdout using the OSC 52 escape sequence: \x1b]52;c;[base64]\x07
+        sys.stdout.write(f"\x1b]52;c;{b64_data}\x07")
+        sys.stdout.flush()
+        return True
+    except Exception:
+        return False
+
+
 def walk_dir(directory: str, git_files: Set[str] = None, gitignore: GitignoreMatcher = None) -> List[str]:
     """Recursively traverses directories, ignoring binaries and configured ignore directories."""
     candidates = []
@@ -462,12 +476,20 @@ def main():
             print(f"❌ Error saving to file {args.output}: {e}", file=sys.stderr)
             sys.exit(1)
     else:
+        copied = False
         try:
             import pyperclip
             pyperclip.copy(payload)
+            copied = True
             print("🚀 Successfully copied to clipboard!")
-        except Exception as e:
-            print(f"❌ Error copying to clipboard: {e}", file=sys.stderr)
+        except Exception:
+            # Fallback to OSC 52 (works seamlessly over SSH / remote terminal sessions)
+            if copy_via_osc52(payload):
+                copied = True
+                print("🚀 Successfully copied to clipboard (via OSC 52 remote sequence)!")
+                
+        if not copied:
+            print("❌ Error copying to clipboard: Pyperclip could not find a copy/paste mechanism.", file=sys.stderr)
             print("💡 In headless Linux systems, you must install 'xclip' or 'xsel', or direct output to a file using the '-o' flag.", file=sys.stderr)
             sys.exit(1)
 

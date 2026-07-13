@@ -18,17 +18,17 @@ class TestSkeletonExtractor(unittest.TestCase):
 
     @patch('ai_pack.sys.stderr', new_callable=StringIO)
     def test_get_skeleton_import_error(self, mock_stderr):
-        with patch.dict(sys.modules, {'codesigs': None}):
-            # Clear sys.modules of any real codesigs import to trigger ImportError
-            original_modules = sys.modules.copy()
-            if 'codesigs' in sys.modules:
-                del sys.modules['codesigs']
-            try:
+        # Clear sys.modules of any real codesigs import to trigger ImportError
+        original_modules = sys.modules.copy()
+        if 'codesigs' in sys.modules:
+            del sys.modules['codesigs']
+        try:
+            with patch.dict(sys.modules, {'codesigs': None}):
                 result = SkeletonExtractor.get_skeleton("test.py", "def foo():\n    pass")
                 self.assertEqual(result, "def foo():\n    pass")
                 self.assertIn("package is required", mock_stderr.getvalue())
-            finally:
-                sys.modules = original_modules
+        finally:
+            sys.modules = original_modules
 
     @patch('ai_pack.sys.stderr', new_callable=StringIO)
     def test_get_skeleton_runtime_error(self, mock_stderr):
