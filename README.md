@@ -2,6 +2,7 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![PyPI version](https://badge.fury.io/py/ai-pack-cli.svg)](https://badge.fury.io/py/ai-pack-cli)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange.svg)](https://github.com/)
 [![GitHub Stars](https://img.shields.io/github/stars/iamraydoan/ai-pack.svg?style=social)](https://github.com/iamraydoan/ai-pack)
 
@@ -29,16 +30,20 @@
 
 Choose one of the following methods to get started quickly:
 
-#### Option 1: Install directly from GitHub (Recommended)
-You can install the tool directly without cloning the repo manually:
+#### Option 1: Install from PyPI (Recommended)
+Install the official release from PyPI:
 ```bash
-pip3 install git+https://github.com/iamraydoan/ai-pack.git --user
+pip3 install ai-pack-cli --user
+```
+Or via `pipx` to run in an isolated environment:
+```bash
+pipx install ai-pack-cli
 ```
 
-#### Option 2: Using `pipx` (Best for isolated CLI tools)
-Ensure you don't run into dependency conflicts by running:
+#### Option 2: Install directly from GitHub
+Install the latest cutting-edge development version directly:
 ```bash
-pipx install git+https://github.com/iamraydoan/ai-pack.git
+pip3 install git+https://github.com/iamraydoan/ai-pack.git --user
 ```
 
 #### Option 3: Manual Clone (Editable mode)
