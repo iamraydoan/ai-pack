@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="ai-pack",
+    name="ai-pack-cli",
     version="0.1.0",
     py_modules=["ai_pack"],
     install_requires=[
