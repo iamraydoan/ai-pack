@@ -6,11 +6,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ai-pack-cli",
-    version="0.1.2",
+    version="0.1.3",
     py_modules=["ai_pack"],
     install_requires=[
         "pyperclip>=1.8.2",
         "questionary>=1.10.0",
+        "codesigs>=0.0.1",
     ],
     entry_points={
         "console_scripts": [

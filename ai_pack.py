@@ -195,6 +195,17 @@ class SkeletonExtractor:
 
     @staticmethod
     def get_skeleton(file_path: str, content: str) -> str:
+        try:
+            from codesigs import file_sigs
+            sigs = file_sigs(file_path)
+            if sigs is not None:
+                return "\n".join(sigs)
+        except ImportError:
+            pass
+        except Exception as e:
+            print(f"⚠️ codesigs failed for {file_path}: {e}. Falling back...", file=sys.stderr)
+            
+        # Fallback to custom parser
         ext = os.path.splitext(file_path)[1].lower()
         if ext == ".py":
             return SkeletonExtractor.extract_python_skeleton(content)
