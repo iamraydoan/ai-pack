@@ -61,6 +61,14 @@ curl -o ~/.local/bin/aip https://raw.githubusercontent.com/iamraydoan/ai-pack/ma
 ```
 *(Note: If you run it standalone, you will need to manually run `pip3 install pyperclip questionary` to enable all optional interactive and clipboard features).*
 
+> [!TIP]
+> **Optional backend for Skeleton Mode (`--skeleton`)**:
+> If you plan to use skeleton extraction for non-Python languages (such as JavaScript, TypeScript, Go, Rust, Java, C#, C++, PHP, Lua, CSS, Swift, and Kotlin), you must install `ast-grep` globally:
+> ```bash
+> npm install -g @ast-grep/cli
+> # or: cargo install ast-grep
+> ```
+
 
 ### Usage Examples
 
