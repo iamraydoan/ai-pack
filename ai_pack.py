@@ -371,12 +371,12 @@ def parse_args():
         help="Explicitly specify files or directories to pack, ignoring the rest."
     )
     parser.add_argument(
-        "--changed",
+        "-c", "--changed",
         action="store_true",
         help="Only pack uncommitted or modified files (requires Git)."
     )
     parser.add_argument(
-        "--skeleton",
+        "-s", "--skeleton",
         action="store_true",
         help="Extract only class definitions, function signatures, and imports/exports to save tokens."
     )

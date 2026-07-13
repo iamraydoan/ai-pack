@@ -3,23 +3,29 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PyPI version](https://badge.fury.io/py/ai-pack-cli.svg)](https://badge.fury.io/py/ai-pack-cli)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange.svg)](https://github.com/)
 [![GitHub Stars](https://img.shields.io/github/stars/iamraydoan/ai-pack.svg?style=social)](https://github.com/iamraydoan/ai-pack)
 
-> Pack your entire codebase into a single formatted Markdown prompt for LLMs, optimized for minimum tokens.
-
-`ai-pack` is a lightweight, high-performance CLI tool designed to help developers package their codebase, specific files, or uncommitted changes into a clean Markdown payload. Easily copy it to the clipboard or save it to a file to feed directly into ChatGPT, Claude, Gemini, or any other LLM.
+Pack your entire codebase, specific files, or uncommitted changes into a single token-optimized Markdown prompt for LLMs (like ChatGPT, Claude, Gemini).
 
 ---
 
-## 🔥 Key Features
+> [!IMPORTANT]
+> **📋 Default Clipboard Behavior**
+>
+> By default, running `aip` **automatically copies** the generated Markdown payload directly to your **system clipboard**. No files are saved to disk unless you specify the output file using the `-o` or `--output` flag.
+>
+> *Note: It also natively supports remote SSH sessions using the OSC 52 clipboard escape sequence.*
 
-*   **⚡ Native CLI Command**: Accessible globally as `ai-pack`, `aipack`, or `aip`.
-*   **💀 Code Skeleton Extraction (`--skeleton`)**: Drastically save tokens by stripping method and function bodies, keeping only class structures, imports, signatures, and docstrings.
-*   **🎯 Interactive Selection (`-i`)**: Interactively choose which files to pack using Arrow keys and Spacebar before generating the payload.
-*   **🌿 Git-Aware (`--changed`)**: Automatically detect and pack only modified, staged, or untracked files.
-*   **🛡️ Gitignore Respecting**: Native Git integration using `git ls-files` to automatically ignore build artifacts, node modules, and everything in `.gitignore` (with a clean manual fallback for non-git folders).
-*   **💬 Predefined LLM Prompts (`-p`)**: Instantly prepend pre-configured prompts for code review, bug hunting, or architecture explanations.
+---
+
+## ⚡ Key Features
+
+*   **📋 Clipboard-First**: Automatically copies your prompt, ready to paste straight into ChatGPT, Claude, Gemini, or any LLM interface.
+*   **💀 Skeleton Mode (`-s` / `--skeleton`)**: Drastically saves tokens by stripping function/method bodies, keeping only class structures, signatures, and imports.
+*   **🎯 Interactive Selector (`-i`)**: Choose files interactively via checkbox CLI menu.
+*   **🌿 Git-Aware (`-c` / `--changed`)**: Automatically pack only modified, staged, or untracked files.
+*   **🛡️ Gitignore-Respecting**: Excludes ignored, temporary, or build files automatically (using `git ls-files` with manual fallback for non-git folders).
+*   **💬 Prompt Presets (`-p`)**: Instantly prepend pre-configured prompts for code review, bug hunting, or architecture explanations.
 *   **📊 Token Estimation**: Heuristic token counting warns you if your payload exceeds your limit (`--max-tokens`).
 
 ---
@@ -28,80 +34,101 @@
 
 ### Installation
 
-Choose one of the following methods to get started quickly:
+Choose your preferred installation method:
 
-#### Option 1: Install from PyPI (Recommended)
-Install the official release from PyPI:
 ```bash
+# Option 1: Install official package via pip (Recommended)
 pip3 install ai-pack-cli --user
-```
-Or via `pipx` to run in an isolated environment:
-```bash
-pipx install ai-pack-cli
-```
 
-#### Option 2: Install directly from GitHub
-Install the latest cutting-edge development version directly:
-```bash
+# Option 2: Install via pipx (Isolated environment)
+pipx install ai-pack-cli
+
+# Option 3: Install development version directly from GitHub
 pip3 install git+https://github.com/iamraydoan/ai-pack.git --user
 ```
 
-#### Option 3: Manual Clone (Editable mode)
-If you want to modify the source code:
-```bash
-git clone https://github.com/iamraydoan/ai-pack.git
-cd ai-pack
-pip3 install -e . --user
-```
-
-#### Option 4: Run as a Standalone Script (One-Liner)
-Since `ai-pack` is a self-contained single script, you can download it directly:
-```bash
-curl -o ~/.local/bin/aip https://raw.githubusercontent.com/iamraydoan/ai-pack/main/ai_pack.py && chmod +x ~/.local/bin/aip
-```
-*(Note: If you run it standalone, you will need to manually run `pip3 install pyperclip questionary` to enable all optional interactive and clipboard features).*
-
 > [!TIP]
-> **Optional backend for Skeleton Mode (`--skeleton`)**:
-> If you plan to use skeleton extraction for non-Python languages (such as JavaScript, TypeScript, Go, Rust, Java, C#, C++, PHP, Lua, CSS, Swift, and Kotlin), you must install `ast-grep` globally:
+> **Skeleton Mode (`-s` / `--skeleton`) for non-Python languages:**
+> To extract code skeletons for JavaScript, TypeScript, Go, Rust, Java, C#, C++, PHP, Lua, CSS, Swift, and Kotlin, install `ast-grep` globally:
 > ```bash
 > npm install -g @ast-grep/cli
 > # or: cargo install ast-grep
 > ```
 
+---
 
-### Usage Examples
+## 💡 Usage & Common Scenarios
 
-#### 1. Pack the entire repository (copied to clipboard)
+Here are common ways to use `ai-pack` (using commands `aip`, `ai-pack`, or `aipack`):
+
+### 1. Pack codebase & copy to clipboard (Default)
 ```bash
 aip
 ```
 
-#### 2. Pack specific files and save to a file
+### 2. Pack specific files/folders and save to a file
 ```bash
 aip -f src/main.py tests/ -o output.md
 ```
 
-#### 3. Pack only uncommitted git changes with a code review prompt
+### 3. Pack only uncommitted changes with a code review prompt
 ```bash
-aip --changed -p review
+aip -c -p review
 ```
 
-#### 4. Extract code skeleton only (drastically saves context window tokens)
+### 4. Pack code skeleton to save context window tokens
 ```bash
-aip --skeleton -p explain
+aip -s -p explain
 ```
 
-#### 5. Interactively choose files to include
+### 5. Choose files interactively before packing
 ```bash
 aip -i
 ```
 
 ---
 
-## 💀 Skeleton Mode Demo
+## ⚙️ CLI Flags & Interactions
 
-### Original Code (`math.py`):
+### Reference
+
+| Flag | Short | Type | Description |
+| :--- | :--- | :--- | :--- |
+| `--files` | `-f` | Path(s) | Specific files or directories to pack (space-separated). |
+| `--changed` | `-c` | Flag | Pack only modified, staged, or untracked Git files. |
+| `--interactive` | `-i` | Flag | Select files interactively via a checkbox menu. |
+| `--skeleton` | `-s` | Flag | Strip method bodies, leaving only signatures and imports to save tokens. |
+| `--prompt` | `-p` | Choices | Prepend preset: `review`, `bug`, or `explain`. |
+| `--output` | `-o` | Path | Save output directly to a file instead of copying to clipboard. |
+| `--max-tokens` | | Number | Count approximate tokens and warn if the limit is exceeded. |
+
+### 🤝 Combining Flags
+
+You can combine flags to narrow down and customize your payload:
+
+*   **Filter Git changes (`-f` + `-c` / `--changed`)**:
+    Only packs files that are *both* modified/uncommitted AND located inside the specified paths.
+    ```bash
+    aip -c -f src/
+    ```
+*   **Interactive selection with filter (`-i` + `-f` / `-c`)**:
+    Shows only the filtered list (e.g. only changed files) in the interactive checkbox menu instead of the entire repo.
+    ```bash
+    aip -i -c
+    ```
+*   **Structure only (`-s` / `--skeleton` + any mode)**:
+    Can be appended to any command to extract skeletons instead of full source code for the selected files.
+    ```bash
+    aip -i -s
+    ```
+*   **Redirect output (`-o` vs Default)**:
+    By default, everything goes to the clipboard. Use `-o filename.md` to save to a file instead.
+
+---
+
+## 💀 Skeleton Mode Example
+
+### Original Code:
 ```python
 def fibonacci(n):
     if n <= 0:
@@ -120,36 +147,14 @@ def fibonacci(n):
     ...
 ```
 
-*Supports Python, JavaScript, TypeScript, Go, Rust, Java, C#, C++, PHP, Lua, CSS, Swift, and Kotlin via codesigs and ast-grep.*
-
-> [!IMPORTANT]
-> **Skeleton Mode Dependencies**:
-> * **Python >= 3.9**: Required to run the `--skeleton` feature.
-> * **ast-grep**: For non-Python languages, the `ast-grep` command-line tool must be installed globally (e.g. via npm: `npm install -g @ast-grep/cli` or cargo: `cargo install ast-grep`).
-
----
-
-## 🎨 Interactive CLI Checklist
-
-Running `aip -i` triggers a beautiful checkbox prompt:
-
-```text
-? Select files to pack (Space to toggle, Enter to confirm):
- ❯ [x] src/main.py
-   [x] src/utils.py
-   [ ] tests/test_main.py
-```
-
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have ideas for new features, bug fixes, or enhancements:
-
-1. Fork the repo.
+1. Fork the repository.
 2. Create your feature branch (`git checkout -b feat/amazing-feature`).
 3. Commit your changes (`git commit -m 'feat: add amazing feature'`).
 4. Push to the branch (`git push origin feat/amazing-feature`).
 5. Open a Pull Request.
 
-**Don't forget to give the project a ⭐ if you found it useful!**
+Give this repository a ⭐ if it helped you pack your code for LLMs!
