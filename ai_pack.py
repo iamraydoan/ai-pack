@@ -314,7 +314,7 @@ def interactive_select(files: List[str]) -> List[str]:
     choices = []
     for f in files:
         rel = os.path.relpath(f, cwd)
-        choices.append(questionary.Choice(title=rel, value=f, checked=True))
+        choices.append(questionary.Choice(title=rel, value=f, checked=False))
         
     if not choices:
         print("⚠️ No files available to select.")
