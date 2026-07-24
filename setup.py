@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 # Read the contents of README.md to use as the long description on PyPI
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -7,7 +7,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="ai-pack-cli",
     version="0.1.9",
-    py_modules=["ai_pack"],
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
     install_requires=[
         "pyperclip>=1.8.2",
         "questionary>=1.10.0",
@@ -16,9 +17,9 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "ai-pack=ai_pack:main",
-            "aipack=ai_pack:main",
-            "aip=ai_pack:main",
+            "ai-pack=ai_pack.cli:main",
+            "aipack=ai_pack.cli:main",
+            "aip=ai_pack.cli:main",
         ],
     },
     long_description=long_description,

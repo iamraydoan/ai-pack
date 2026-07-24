@@ -1,13 +1,18 @@
-import unittest
 import os
-import tempfile
 import shutil
-from ai_pack import GitignoreMatcher
+import sys
+import tempfile
+import unittest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
+from ai_pack.git import GitignoreMatcher
+
 
 class TestGitignoreMatcher(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
-        
+
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
@@ -31,8 +36,8 @@ class TestGitignoreMatcher(unittest.TestCase):
         with open(os.path.join(self.test_dir, ".gitignore"), "w") as f:
             f.write("/root_only.txt\nsub/ignored.txt\n")
         matcher = GitignoreMatcher(self.test_dir)
-        
+
         self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "root_only.txt")))
         self.assertFalse(matcher.is_ignored(os.path.join(self.test_dir, "nested", "root_only.txt")))
-        
+
         self.assertTrue(matcher.is_ignored(os.path.join(self.test_dir, "sub", "ignored.txt")))

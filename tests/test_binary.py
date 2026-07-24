@@ -1,8 +1,13 @@
-import unittest
 import os
-import tempfile
 import shutil
-from ai_pack import is_binary
+import sys
+import tempfile
+import unittest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
+from ai_pack.skeleton import is_binary
+
 
 class TestBinaryDetection(unittest.TestCase):
     def setUp(self):

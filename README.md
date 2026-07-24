@@ -143,13 +143,14 @@ def fibonacci(n):
 
 ### Skeleton Output:
 ```python
-def fibonacci(n):
-    ...
+def fibonacci(n): ...
 ```
 
 ---
 
 ## 🤝 Contributing
+
+Contributions are welcome! Please check out the [Developer & Contributing Guide](CONTRIBUTING.md) for local setup, running unit tests, and code formatting guidelines (`ruff`).
 
 1. Fork the repository.
 2. Create your feature branch (`git checkout -b feat/amazing-feature`).
