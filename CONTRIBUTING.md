@@ -120,3 +120,49 @@ ruff format .
    git commit -m "feat: add support for custom prompt templates"
    ```
 6. Push to your branch and open a Pull Request!
+
+---
+
+## 📦 Releasing & Publishing a New Version
+
+To release a new version to PyPI, follow these steps:
+
+### 1. Bump the Version Number
+
+Update the version string (e.g., `0.2.0`) in the following **3 files**:
+
+1. `pyproject.toml`:
+   ```toml
+   version = "0.2.0"
+   ```
+2. `setup.py`:
+   ```python
+   version="0.2.0",
+   ```
+3. `src/ai_pack/__init__.py`:
+   ```python
+   __version__ = "0.2.0"
+   ```
+
+### 2. Commit, Tag, and Push
+
+Commit the version bump and push a new Git version tag matching `v*`:
+
+```bash
+# 1. Commit the version bump
+git commit -am "chore: bump version to 0.2.0"
+
+# 2. Create a git tag matching the release version (with 'v' prefix)
+git tag v0.2.0
+
+# 3. Push main branch and the tag to GitHub
+git push origin main
+git push origin v0.2.0
+```
+
+### 3. Automated PyPI Deployment
+
+Pushing a tag starting with `v*` (e.g. `v0.2.0`) automatically triggers the **GitHub Actions** workflow (`.github/workflows/publish.yml`), which will:
+1. Run all unit tests.
+2. Build source and wheel packages.
+3. Automatically publish the new release to **PyPI** via OIDC Trusted Publishing.
