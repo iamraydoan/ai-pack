@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ai-pack-cli",
-    version="0.2.1",
+    version="0.2.2",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=[
