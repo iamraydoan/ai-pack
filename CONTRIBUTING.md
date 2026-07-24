@@ -125,6 +125,9 @@ ruff format .
 
 ## 📦 Releasing & Publishing a New Version
 
+> [!NOTE]
+> **Maintainers Only**: This section is intended for repository Owners and Maintainers with write permissions. External contributors should submit code changes via Pull Requests without bumping version tags.
+
 To release a new version to PyPI, follow these steps:
 
 ### 1. Bump the Version Number
