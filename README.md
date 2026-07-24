@@ -96,6 +96,7 @@ aip -i
 
 | Flag | Short | Type | Description |
 | :--- | :--- | :--- | :--- |
+| `--version` | `-v` | Flag | Show the version of ai-pack and exit. |
 | `--files` | `-f` | Path(s) | Specific files or directories to pack (space-separated). |
 | `--changed` | `-c` | Flag | Pack only modified, staged, or untracked Git files. |
 | `--interactive` | `-i` | Flag | Select files interactively via a checkbox menu. |

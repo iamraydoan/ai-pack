@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 
+from . import __version__
 from .constants import PROMPTS
 from .packer import get_candidate_files, pack_files
 from .ui import interactive_select
@@ -11,6 +12,13 @@ from .utils import copy_via_osc52
 def parse_args():
     parser = argparse.ArgumentParser(
         description="📦 ai-pack: Pack your codebase into a single formatted Markdown string for LLMs."
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the version of ai-pack and exit.",
     )
     parser.add_argument(
         "-f", "--files", nargs="+", help="Explicitly specify files or directories to pack, ignoring the rest."
