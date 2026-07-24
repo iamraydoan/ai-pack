@@ -16,7 +16,9 @@ Update the version string (e.g. `0.2.0`) across the following files:
    ```
 2. **`setup.py`**:
    ```python
-   version="0.2.0",
+   setup(
+       version="0.2.0",
+   )
    ```
 3. **`src/ai_pack/__init__.py`**:
    ```python
