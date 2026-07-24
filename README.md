@@ -43,8 +43,14 @@ pip3 install ai-pack-cli --user
 # Option 2: Install via pipx (Isolated environment)
 pipx install ai-pack-cli
 
-# Option 3: Install development version directly from GitHub
-pip3 install git+https://github.com/iamraydoan/ai-pack.git --user
+# Option 3: Standalone Executable (Zero dependencies - No Python required!)
+# Linux:
+curl -sSL https://github.com/iamraydoan/ai-pack/releases/latest/download/ai-pack-linux-x86_64 -o /usr/local/bin/aip && chmod +x /usr/local/bin/aip
+
+# macOS:
+curl -sSL https://github.com/iamraydoan/ai-pack/releases/latest/download/ai-pack-macos-arm64 -o /usr/local/bin/aip && chmod +x /usr/local/bin/aip
+
+# Windows: Download ai-pack-windows-x86_64.exe from GitHub Releases
 ```
 
 > [!TIP]
