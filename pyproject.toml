@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-pack-cli"
-version = "0.2.0"
+version = "0.2.1"
 description = "Pack your codebase into a single formatted Markdown string for LLMs."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -20,8 +20,8 @@ classifiers = [
 dependencies = [
     "pyperclip>=1.8.2",
     "questionary>=1.10.0",
-    'codesigs>=0.0.1; python_version >= "3.9"',
-    'ast-grep-py<=0.39.7; python_version == "3.9"',
+    "tree-sitter~=0.21.3",
+    "tree-sitter-languages~=1.10.2",
 ]
 
 [project.urls]

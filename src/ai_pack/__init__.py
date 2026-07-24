@@ -1,6 +1,6 @@
 """ai-pack: Pack your codebase into a single formatted Markdown string for LLMs."""
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from .cli import main
 from .git import GitHelper, GitignoreMatcher

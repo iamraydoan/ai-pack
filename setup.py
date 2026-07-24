@@ -6,14 +6,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ai-pack-cli",
-    version="0.2.0",
+    version="0.2.1",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=[
         "pyperclip>=1.8.2",
         "questionary>=1.10.0",
-        'codesigs>=0.0.1; python_version >= "3.9"',
-        'ast-grep-py<=0.39.7; python_version == "3.9"',
+        "tree-sitter~=0.21.3",
+        "tree-sitter-languages~=1.10.2",
     ],
     entry_points={
         "console_scripts": [

@@ -48,12 +48,8 @@ pip3 install git+https://github.com/iamraydoan/ai-pack.git --user
 ```
 
 > [!TIP]
-> **Skeleton Mode (`-s` / `--skeleton`) for non-Python languages:**
-> To extract code skeletons for JavaScript, TypeScript, Go, Rust, Java, C#, C++, PHP, Lua, CSS, Swift, and Kotlin, install `ast-grep` globally:
-> ```bash
-> npm install -g @ast-grep/cli
-> # or: cargo install ast-grep
-> ```
+> **Skeleton Mode (`-s` / `--skeleton`)**:
+> Natively supports AST outline extraction for Python, JavaScript, TypeScript, Go, Rust, Java, C/C++, C#, PHP, Ruby, and 30+ programming languages out of the box with zero external setup required.
 
 ---
 
